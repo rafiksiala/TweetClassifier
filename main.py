@@ -73,7 +73,7 @@ async def favicon():
 # ------------------------------------------------------------------------------
 
 # Charger le modèle entraîné
-best_model = load_best_model()
+#best_model = load_best_model()
 
 # Définir la longueur maximale des séquences
 max_len = 100
@@ -84,10 +84,11 @@ class NameRequest(BaseModel):
 @app.post("/predict/")
 def predict(request: NameRequest):
     try:
-        preprocessed_input = preprocess_text(request.name)
-        prediction = best_model.predict(preprocessed_input)
-        proba = float(prediction[0][0])
-        sentiment = 'positif' if proba > 0.5 else 'négatif'
-        return {'sentiment': sentiment, 'confiance': max(proba, 1-proba)}
+        #preprocessed_input = preprocess_text(request.name)
+        #prediction = best_model.predict(preprocessed_input)
+        #proba = float(prediction[0][0])
+        #sentiment = 'positif' if proba > 0.5 else 'négatif'
+        #return {'sentiment': sentiment, 'confiance': max(proba, 1-proba)}
+        return {'sentiment': 'positif', 'confiance': 1}
     except Exception as e:
         return {"error": str(e)}
