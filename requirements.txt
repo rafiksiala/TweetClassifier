@@ -1,3 +1,11 @@
 fastapi
 uvicorn
 gunicorn
+tensorflow
+numpy
+pydantic
+httpx
+pytest
+pandas
+mlflow
+nltk
