@@ -7,4 +7,4 @@ pydantic
 httpx
 pytest
 pandas
-mlflow
+nltk
