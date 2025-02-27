@@ -1,3 +1,8 @@
 fastapi
 uvicorn
 gunicorn
+numpy
+pydantic
+httpx
+pytest
+pandas
