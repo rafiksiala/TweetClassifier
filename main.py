@@ -5,11 +5,6 @@ from pydantic import BaseModel
 import pandas as pd
 import numpy as np
 
-import nltk
-from nltk.corpus import stopwords
-
-import tensorflow as tf
-from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 import unicodedata
 import uvicorn
@@ -21,7 +16,7 @@ import os
 
 # ------------------------------------------------------------------------------
 
-nltk.data.path.append("nltk")
+#nltk.data.path.append("nltk")
 
 # Fonction de nettoyage du texte
 def clean_text(w):
