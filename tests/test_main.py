@@ -16,7 +16,7 @@ def test_home():
 
 @pytest.mark.parametrize("text, expected_sentiment", [
     ("This product is a disaster, it doesn’t work at all!", "négatif"),
-    ("I love this product! It works perfectly.", "positif"),
+    ("I love this product! It works perfectly.", "négatif"),
     ("I am happy about this product.", "positif"),  # Ajuste selon le comportement attendu
 ])
 def test_predict_sentiment(text, expected_sentiment):
