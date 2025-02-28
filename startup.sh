@@ -25,15 +25,21 @@ http {
     server {
         listen 8000;
 
+        # Redirection vers Streamlit
         location / {
-            proxy_pass http://127.0.0.1:8501/;  # Redirige vers Streamlit
+            proxy_pass http://127.0.0.1:8001/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade \$http_upgrade;
+            proxy_set_header Connection "Upgrade";
             proxy_set_header Host \$host;
             proxy_set_header X-Real-IP \$remote_addr;
             proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         }
 
+        # Redirection vers FastAPI
         location /api/ {
-            proxy_pass http://127.0.0.1:8001/;  # Redirige vers FastAPI
+            proxy_pass http://127.0.0.1:8002/;
+            proxy_http_version 1.1;
             proxy_set_header Host \$host;
             proxy_set_header X-Real-IP \$remote_addr;
             proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -42,11 +48,11 @@ http {
 }
 EOF
 
-# Démarrer NGINX (sans daemon off, car Azure gère les processus)
+# Démarrer NGINX
 service nginx start
 
 # Lancer FastAPI avec Gunicorn en arrière-plan
-gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app --bind 127.0.0.1:8001 &
+gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app --bind 127.0.0.1:8002 &
 
-# Lancer Streamlit en arrière-plan
-streamlit run app.py --server.port 8501 --server.address 127.0.0.1
+# Lancer Streamlit en arrière-plan (ajout de `&` pour éviter le blocage)
+streamlit run app.py --server.port 8001 --server.address 127.0.0.1 &
