@@ -1,9 +1,13 @@
 #!/bin/bash
 
-# Installer NGINX et Gunicorn (Azure Web App Linux ne garde pas les paquets après un redémarrage)
-apt-get update && apt-get install -y nginx gunicorn
+# Vérifier si NGINX est déjà installé (évite les redémarrages)
+if ! command -v nginx &> /dev/null
+then
+    echo "Installation de NGINX..."
+    apt-get update && apt-get install -y nginx
+fi
 
-# Copier la configuration de NGINX (création du fichier de config)
+# Copier la configuration de NGINX
 cat > /etc/nginx/nginx.conf <<EOF
 worker_processes 1;
 
@@ -38,8 +42,8 @@ http {
 }
 EOF
 
-# Démarrer NGINX
-nginx &
+# Démarrer NGINX (sans daemon off, car Azure gère les processus)
+service nginx start
 
 # Lancer FastAPI avec Gunicorn en arrière-plan
 gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app --bind 127.0.0.1:8001 &
