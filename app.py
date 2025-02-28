@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # Configuration de l'API
-API_URL = "https://tweet-classifier-app.azurewebsites.net:8501/predict/"
+API_URL = "https://tweet-classifier-app.azurewebsites.net/api/predict/"
 
 st.title("Analyse de Sentiment avec FastAPI et Streamlit")
 
