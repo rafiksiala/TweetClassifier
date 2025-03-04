@@ -87,6 +87,21 @@ def log_prediction(text, prediction, confidence, feedback=None):
             }
         )
 
+def log_prediction(text, prediction, confidence):
+    if APP_INSIGHTS_CONNECTION_STRING:
+        logger.info("Prediction envoyé avec succès", extra={"custom_dimensions": json.dumps({
+            "input_text": text,
+            "predicted_sentiment": prediction,
+            "confidence": confidence
+        })})
+
+def log_feedback(text, prediction, confidence, feedback=None):
+    if APP_INSIGHTS_CONNECTION_STRING:
+        logger.info("Feedback envoyé avec succès", extra={"custom_dimensions": json.dumps({
+            "input_text": text,
+            "predicted_sentiment": prediction,
+            "feedback": feedback if feedback else ""
+        })})
 
 # Classe pour les requêtes de prédiction
 class TextRequest(BaseModel):
@@ -103,7 +118,6 @@ def predict(request: TextRequest):
 
         # Log de la prédiction
         log_prediction(request.text, sentiment, confidence)
-
         return {'sentiment': sentiment, 'confiance': confidence}
     except Exception as e:
         logger.error(f"Erreur lors de la prédiction: {str(e)}")
@@ -122,7 +136,6 @@ class FeedbackRequest(BaseModel):
 def feedback(request: FeedbackRequest):
     try:
         # Log du feedback utilisateur
-        log_prediction(request.text, request.sentiment, request.confidence, request.feedback)
-        logger.info("Feedback envoyé avec succès.")
+        log_feedback(request.text, request.sentiment, request.feedback)
     except Exception as e:
         logger.error(f"Erreur lors du feedback: {str(e)}")
