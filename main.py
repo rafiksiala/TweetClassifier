@@ -74,22 +74,39 @@ max_len = 100
 
 # Fonction pour envoyer un log à Application Insights
 
+
+def log_prediction(text, prediction, confidence, feedback=None):
+    if APP_INSIGHTS_CONNECTION_STRING:
+        logger.info(
+            "Prediction event",
+            extra={
+                "custom_dimensions": {
+                    "input_text": text,
+                    "predicted_sentiment": prediction,
+                    "confidence": confidence,
+                    "feedback": feedback if feedback else ""
+                }
+            }
+        )
+
 def log_prediction(text, prediction, confidence):
     if APP_INSIGHTS_CONNECTION_STRING:
-        logger.info("Prediction envoyé avec succès", extra={"custom_dimensions": {
-            "input_text": text,
-            "predicted_sentiment": prediction,
-            "confidence": confidence,
-        }})
+        logger.info("Prediction envoyé avec succès", extra={
+            "custom_dimensions": {
+                "input_text": text,
+                "predicted_sentiment": prediction,
+                "confidence": confidence
+            }})
 
 def log_feedback(text, prediction, feedback):
     if APP_INSIGHTS_CONNECTION_STRING:
         message = "Tweet correctement prédit" if feedback=="correct" else "Tweet mal prédit"
-        logger.info(message, extra={"custom_dimensions": {
-            "input_text": text,
-            "predicted_sentiment": prediction,
-            "feedback": feedback
-        }})
+        logger.info(message, extra={
+            "custom_dimensions": {
+                "input_text": text,
+                "predicted_sentiment": prediction,
+                "feedback": feedback
+            }})
 
 # Classe pour les requêtes de prédiction
 class TextRequest(BaseModel):
