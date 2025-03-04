@@ -73,19 +73,6 @@ model = load_model()
 max_len = 100
 
 # Fonction pour envoyer un log à Application Insights
-def log_prediction(text, prediction, confidence, feedback=None):
-    if APP_INSIGHTS_CONNECTION_STRING:
-        logger.info(
-            "Prediction event",
-            extra={
-                "custom_dimensions": {
-                    "input_text": text,
-                    "predicted_sentiment": prediction,
-                    "confidence": confidence,
-                    "feedback": feedback if feedback else ""
-                }
-            }
-        )
 
 def log_prediction(text, prediction, confidence):
     if APP_INSIGHTS_CONNECTION_STRING:
@@ -102,6 +89,7 @@ def log_feedback(text, prediction, feedback):
             "predicted_sentiment": prediction,
             "feedback": feedback
         })})
+
 
 # Classe pour les requêtes de prédiction
 class TextRequest(BaseModel):
@@ -128,7 +116,6 @@ def predict(request: TextRequest):
 class FeedbackRequest(BaseModel):
     text: str
     sentiment: str
-    confidence: float
     feedback: str  # "correct" ou "incorrect"
 
 # Endpoint pour stocker le feedback
