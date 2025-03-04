@@ -158,7 +158,7 @@ if st.session_state["feedback"]:
             "feedback": st.session_state["feedback"]
         })
         if response_feedback.status_code == 200:
-            st.success(f"Merci pour votre feedback : {st.session_state['feedback']}")
+            st.success(f"Merci pour votre feedback ({st.session_state['feedback']})")
             # Réinitialiser après envoi
             st.session_state["feedback"] = None
     except requests.exceptions.RequestException as e:

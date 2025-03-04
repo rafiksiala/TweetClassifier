@@ -76,21 +76,20 @@ max_len = 100
 
 def log_prediction(text, prediction, confidence):
     if APP_INSIGHTS_CONNECTION_STRING:
-        logger.info("Prediction envoyé avec succès", extra={"custom_dimensions": json.dumps({
+        logger.info("Prediction envoyé avec succès", extra={"custom_dimensions": {
             "input_text": text,
             "predicted_sentiment": prediction,
-            "confidence": confidence
-        })})
+            "confidence": confidence,
+        }})
 
 def log_feedback(text, prediction, feedback):
     if APP_INSIGHTS_CONNECTION_STRING:
         message = "Tweet correctement prédit" if feedback=="correct" else "Tweet mal prédit"
-        logger.info(message, extra={"custom_dimensions": json.dumps({
+        logger.info(message, extra={"custom_dimensions": {
             "input_text": text,
             "predicted_sentiment": prediction,
             "feedback": feedback
-        })})
-
+        }})
 
 # Classe pour les requêtes de prédiction
 class TextRequest(BaseModel):
