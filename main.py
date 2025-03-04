@@ -84,7 +84,7 @@ def log_prediction(text, prediction, confidence):
 
 def log_feedback(text, prediction, feedback):
     if APP_INSIGHTS_CONNECTION_STRING:
-        message = "Tweet mal prédit" if feedback=="correct" else "Tweet correctement prédit"
+        message = "Tweet correctement prédit" if feedback=="correct" else "Tweet mal prédit"
         logger.info(message, extra={"custom_dimensions": json.dumps({
             "input_text": text,
             "predicted_sentiment": prediction,
