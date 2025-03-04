@@ -6,10 +6,6 @@ import logging
 API_URL = "http://127.0.0.1:8001/predict/"
 FEEDBACK_URL = "http://127.0.0.1:8001/feedback/"
 
-# Configuration du logger
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
-
 st.title("Analyse de Sentiment")
 
 # Initialiser st.session_state pour éviter les KeyErrors
@@ -70,7 +66,6 @@ if st.button("Prédire le sentiment"):
                 st.error(f"Erreur {response.status_code} : {response.text}")
         except requests.exceptions.RequestException as e:
             st.error("Impossible de se connecter à l'API.")
-            logger.error(f"Erreur de connexion à l'API : {e}")
 
 # Affichage du résultat de la prédiction
 if st.session_state["sentiment"]:
@@ -165,9 +160,7 @@ if st.session_state["feedback"]:
         })
         if response_feedback.status_code == 200:
             st.success(f"Merci pour votre feedback : {st.session_state['feedback']}")
-            logger.info("Feedback envoyé avec succès.")
             # Réinitialiser après envoi
             st.session_state["feedback"] = None
     except requests.exceptions.RequestException as e:
         st.error("Impossible d'envoyer le feedback.")
-        logger.error(f"Erreur de connexion au serveur de feedback : {e}")

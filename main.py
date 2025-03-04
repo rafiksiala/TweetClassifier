@@ -75,12 +75,17 @@ max_len = 100
 # Fonction pour envoyer un log à Application Insights
 def log_prediction(text, prediction, confidence, feedback=None):
     if APP_INSIGHTS_CONNECTION_STRING:
-        logger.info("Prediction event", extra={"custom_dimensions": json.dumps({
-            "input_text": text,
-            "predicted_sentiment": prediction,
-            "confidence": confidence,
-            "feedback": feedback if feedback else ""
-        })})
+        logger.info(
+            "Prediction event",
+            extra={
+                "custom_dimensions": {
+                    "input_text": text,
+                    "predicted_sentiment": prediction,
+                    "confidence": confidence,
+                    "feedback": feedback if feedback else ""
+                }
+            }
+        )
 
 
 # Classe pour les requêtes de prédiction
@@ -101,8 +106,7 @@ def predict(request: TextRequest):
 
         return {'sentiment': sentiment, 'confiance': confidence}
     except Exception as e:
-        logger.error(f"Erreur de prédiction: {str(e)}")
-        return {"error": str(e)}
+        logger.error(f"Erreur lors de la prédiction: {str(e)}")
 
 # ------------------------------------------------------------------------------
 
@@ -119,7 +123,6 @@ def feedback(request: FeedbackRequest):
     try:
         # Log du feedback utilisateur
         log_prediction(request.text, request.sentiment, request.confidence, request.feedback)
-        return {"message": "Feedback enregistré avec succès"}
+        logger.info("Feedback envoyé avec succès.")
     except Exception as e:
         logger.error(f"Erreur lors du feedback: {str(e)}")
-        return {"error": str(e)}
