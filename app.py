@@ -155,6 +155,7 @@ if st.session_state["feedback"]:
         response_feedback = requests.post(FEEDBACK_URL, json={
             "text": st.session_state["user_input"],
             "sentiment": st.session_state["sentiment"],
+            "confidence": st.session_state["confidence"],
             "feedback": st.session_state["feedback"]
         })
         if response_feedback.status_code == 200:

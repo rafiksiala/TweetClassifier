@@ -98,16 +98,6 @@ def log_prediction(text, prediction, confidence):
                 "confidence": confidence
             }})
 
-def log_feedback(text, prediction, feedback):
-    if APP_INSIGHTS_CONNECTION_STRING:
-        message = "Tweet correctement prédit" if feedback=="correct" else "Tweet mal prédit"
-        logger.info(message, extra={
-            "custom_dimensions": {
-                "input_text": text,
-                "predicted_sentiment": prediction,
-                "feedback": feedback
-            }})
-
 # Classe pour les requêtes de prédiction
 class TextRequest(BaseModel):
     text: str
@@ -129,10 +119,22 @@ def predict(request: TextRequest):
 
 # ------------------------------------------------------------------------------
 
+def log_feedback(text, prediction, confidence, feedback):
+    if APP_INSIGHTS_CONNECTION_STRING:
+        message = "Tweet correctement prédit" if feedback=="correct" else "Tweet mal prédit"
+        logger.info(message, extra={
+            "custom_dimensions": {
+                "input_text": text,
+                "predicted_sentiment": prediction,
+                "confidence": confidence,
+                "feedback": feedback
+            }})
+
 # Classe pour les feedbacks utilisateur
 class FeedbackRequest(BaseModel):
     text: str
     sentiment: str
+    confidence: str
     feedback: str  # "correct" ou "incorrect"
 
 # Endpoint pour stocker le feedback
@@ -140,6 +142,6 @@ class FeedbackRequest(BaseModel):
 def feedback(request: FeedbackRequest):
     try:
         # Log du feedback utilisateur
-        log_feedback(request.text, request.sentiment, request.feedback)
+        log_feedback(request.text, request.sentiment, request.confidence, request.feedback)
     except Exception as e:
         logger.error(f"Erreur lors du feedback: {str(e)}")
