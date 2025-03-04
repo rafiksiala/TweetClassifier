@@ -57,7 +57,7 @@ user_input = st.text_area(" ", placeholder="Écrivez votre texte ici ...", heigh
 if st.button("Prédire le sentiment"):
     if user_input:
         try:
-            response = requests.post(API_URL, json={"name": user_input})
+            response = requests.post(API_URL, json={"text": user_input})
             if response.status_code == 200:
                 result = response.json()
                 st.session_state["sentiment"] = result.get("sentiment", None)

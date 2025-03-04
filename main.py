@@ -75,34 +75,29 @@ max_len = 100
 # Fonction pour envoyer un log à Application Insights
 def log_prediction(text, prediction, confidence, feedback=None):
     if APP_INSIGHTS_CONNECTION_STRING:
-        logger.info(
-            "Prediction event",
-            extra={
-                "custom_dimensions": {
-                    "input_text": text,
-                    "predicted_sentiment": prediction,
-                    "confidence": confidence,
-                    "feedback": feedback
-                }
-            }
-        )
+        logger.info("Prediction event", extra={"custom_dimensions": json.dumps({
+            "input_text": text,
+            "predicted_sentiment": prediction,
+            "confidence": confidence,
+            "feedback": feedback if feedback else ""
+        })})
+
 
 # Classe pour les requêtes de prédiction
-class NameRequest(BaseModel):
-    name: str
+class TextRequest(BaseModel):
+    text: str
 
 # Endpoint pour la prédiction
 @app.post("/predict/")
-def predict(request: NameRequest):
+def predict(request: TextRequest):
     try:
-        print(request)
-        preprocessed_input = preprocess_text(request.name)
+        preprocessed_input = preprocess_text(request.text)
         proba = model.predict_proba(preprocessed_input)[:, 1][0]
         sentiment = 'positif' if proba > 0.5 else 'négatif'
         confidence = max(proba, 1-proba)
 
         # Log de la prédiction
-        log_prediction(request.name, sentiment, confidence)
+        log_prediction(request.text, sentiment, confidence)
 
         return {'sentiment': sentiment, 'confiance': confidence}
     except Exception as e:
@@ -123,7 +118,6 @@ class FeedbackRequest(BaseModel):
 def feedback(request: FeedbackRequest):
     try:
         # Log du feedback utilisateur
-        print(request)
         log_prediction(request.text, request.sentiment, request.confidence, request.feedback)
         return {"message": "Feedback enregistré avec succès"}
     except Exception as e:
