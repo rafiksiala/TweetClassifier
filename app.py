@@ -3,8 +3,8 @@ import requests
 import logging
 
 # Configuration des URLs de l'API FastAPI
-API_URL = "http://127.0.0.1:8000/predict/"
-FEEDBACK_URL = "http://127.0.0.1:8000/feedback/"
+API_URL = "http://127.0.0.1:8001/predict/"
+FEEDBACK_URL = "http://127.0.0.1:8001/feedback/"
 
 # Configuration du logger
 logger = logging.getLogger(__name__)
