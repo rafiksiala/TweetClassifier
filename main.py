@@ -95,12 +95,12 @@ def log_prediction(text, prediction, confidence):
             "confidence": confidence
         })})
 
-def log_feedback(text, prediction, confidence, feedback=None):
+def log_feedback(text, prediction, feedback):
     if APP_INSIGHTS_CONNECTION_STRING:
         logger.info("Feedback envoyé avec succès", extra={"custom_dimensions": json.dumps({
             "input_text": text,
             "predicted_sentiment": prediction,
-            "feedback": feedback if feedback else ""
+            "feedback": feedback
         })})
 
 # Classe pour les requêtes de prédiction
