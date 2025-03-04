@@ -1,144 +1,173 @@
 import streamlit as st
 import requests
+import logging
 
-# API FastAPI tourne en interne sur `127.0.0.1:8000`
-API_URL = "http://127.0.0.1:8001/predict/"
-FEEDBACK_URL = "http://127.0.0.1:8001/feedback/"
+# Configuration des URLs de l'API FastAPI
+API_URL = "http://127.0.0.1:8000/predict/"
+FEEDBACK_URL = "http://127.0.0.1:8000/feedback/"
 
-# Custom CSS pour aligner la prédiction et les boutons sur la même ligne
-st.markdown(
-    """
-    <style>
-        .result-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: #f9f9f9;
-            padding: 12px 15px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            width: 50%;
-            margin-top: 10px;
-        }
-        .result-text {
-            font-size: 22px;
-            font-weight: bold;
-            margin: 0;
-        }
-        .button-container {
-            display: flex;
-            gap: 8px;
-        }
-        .feedback-button {
-            font-size: 16px;
-            padding: 8px 15px;
-            border: 2px solid #ccc;
-            border-radius: 5px;
-            background-color: white;
-            color: black;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .feedback-button:hover {
-            background-color: #f0f0f0;
-        }
-        @media (max-width: 600px) {
-            .result-container {
-                flex-direction: column;
-                width: 90%;
-            }
-            .button-container {
-                margin-top: 10px;
-                justify-content: center;
-            }
-        }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+# Configuration du logger
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 st.title("Analyse de Sentiment")
 
-# Injecter le CSS pour modifier le bouton
+# Initialiser st.session_state pour éviter les KeyErrors
+if "sentiment" not in st.session_state:
+    st.session_state["sentiment"] = None
+if "confidence" not in st.session_state:
+    st.session_state["confidence"] = None
+if "user_input" not in st.session_state:
+    st.session_state["user_input"] = None
+if "feedback" not in st.session_state:
+    st.session_state["feedback"] = None
+if "feedback_sent" not in st.session_state:
+    st.session_state["feedback_sent"] = False  # Variable pour cacher les boutons après l'envoi
+
+
 st.markdown(
     """
     <style>
-    div.stButton > button {
-        font-size: 16px;
-        padding: 8px 15px;
-        border: 2px solid #ccc;
-        border-radius: 5px;
-        background-color: white;
-        color: black;
-        cursor: pointer;
-        font-weight: bold;
-    }
-    div.stButton > button:hover {
-        background-color: #f0f0f0;
-        color: black;
-        border: 2px solid #ccc;
-    }
-    div.stButton > button:active,
-    div.stButton > button:focus {
-        background-color: #f0f0f0 !important;
-        color: black !important;
-        outline: none !important; /* Supprime l'effet de focus */
-    }
+        textarea {
+            width: 100% !important;
+            height: 50px !important;
+            font-size: px;
+            border-radius: 10px;
+            border: 2px solid #ccc;
+            background-color: #f9f9f9;
+            color: #333;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Effet au focus (quand l'utilisateur clique) */
+        textarea:focus {
+            border-color: #4CAF50 !important;
+            box-shadow: 0px 0px 10px rgba(76, 175, 80, 0.3);
+            background-color: white;
+            outline: none !important;
+        }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-user_input = st.text_area("")
+user_input = st.text_area(" ", placeholder="Écrivez votre texte ici ...", height=150)
 
+# Bouton pour prédire le sentiment
 if st.button("Prédire le sentiment"):
     if user_input:
         try:
             response = requests.post(API_URL, json={"name": user_input})
             if response.status_code == 200:
                 result = response.json()
-                sentiment = result['sentiment']
-                confidence = result['confiance']
-
-                emoji = "😊" if sentiment == "positif" else "😠"
-
-                # Affichage de la prédiction avec les boutons à droite
-                st.markdown(
-                    f"""
-                    <div class="result-container">
-                        <span class="result-text">{emoji} {sentiment.upper()} <span style="color: #555;">({confidence:.2%})</span></span>
-                        <div class="button-container">
-                            <form action="" method="post">
-                                <button class="feedback-button" name="correct" type="submit">👍</button>
-                            </form>
-                            <form action="" method="post">
-                                <button class="feedback-button" name="incorrect" type="submit">👎</button>
-                            </form>
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-
-                # Envoi du feedback
-                feedback = None
-                if "correct" in st.session_state:
-                    feedback = "correct"
-                elif "incorrect" in st.session_state:
-                    feedback = "incorrect"
-
-                if feedback:
-                    requests.post(FEEDBACK_URL, json={
-                        "text": user_input,
-                        "sentiment": sentiment,
-                        "confidence": confidence,
-                        "feedback": feedback
-                    })
-
+                st.session_state["sentiment"] = result.get("sentiment", None)
+                st.session_state["confidence"] = result.get("confiance", 0)
+                st.session_state["user_input"] = user_input
+                st.session_state["feedback"] = None  # Reset du feedback pour réafficher les boutons
+                st.session_state["feedback_sent"] = False  # Réaffichage des boutons
+                st.rerun()  # Recharge l'interface pour afficher le résultat
             else:
-                st.write(f"Erreur {response.status_code} : {response.text}")
+                st.error(f"Erreur {response.status_code} : {response.text}")
         except requests.exceptions.RequestException as e:
-            st.write("Impossible de se connecter à l'API.")
-            st.text(str(e))
-    else:
-        st.warning("Veuillez entrer un texte.")
+            st.error("Impossible de se connecter à l'API.")
+            logger.error(f"Erreur de connexion à l'API : {e}")
+
+# Affichage du résultat de la prédiction
+if st.session_state["sentiment"]:
+    emoji = "😊" if st.session_state["sentiment"] == "positif" else "😠"
+
+    st.markdown(
+        """
+        <style>
+            .result-container {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background-color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                border: 3px solid #ddd;
+                box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.1);
+                width: 67%;
+                margin: 0px 0px 20px 0px;
+                transition: all 0.3s ease-in-out;
+            }
+
+            .result-container:hover {
+                box-shadow: 3px 3px 20px rgba(0, 0, 0, 0.2);
+            }
+
+            .result-text {
+                font-size: 24px;
+                font-weight: bold;
+                color: black;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .result-confidence {
+                font-size: 18px;
+                font-weight: normal;
+                color: #555;
+            }
+
+            /* Changement de couleur selon le sentiment */
+            .positive {
+                border-color: #4CAF50;
+                background-color: #E8F5E9;
+            }
+
+            .negative {
+                border-color: #F44336;
+                background-color: #FFEBEE;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    # Déterminer la classe CSS en fonction du sentiment
+    sentiment_class = "positive" if st.session_state["sentiment"] == "positif" else "negative"
+    # Appliquer le style au résultat
+    st.markdown(
+        f"""
+        <div class="result-container {sentiment_class}">
+            <span class="result-text">{emoji} {st.session_state["sentiment"].upper()}
+            <span class="result-confidence">({st.session_state["confidence"]:.2%})</span></span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # Affichage des boutons seulement si aucun feedback n'a été envoyé
+    if not st.session_state["feedback_sent"]:
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("👍 Correct", key="correct_feedback"):
+                st.session_state["feedback"] = "correct"
+                st.session_state["feedback_sent"] = True  # Cacher les boutons après clic
+                st.rerun()
+        with col2:
+            if st.button("👎 Incorrect", key="incorrect_feedback"):
+                st.session_state["feedback"] = "incorrect"
+                st.session_state["feedback_sent"] = True  # Cacher les boutons après clic
+                st.rerun()
+
+# Envoi du feedback une fois sélectionné
+if st.session_state["feedback"]:
+    try:
+        response_feedback = requests.post(FEEDBACK_URL, json={
+            "text": st.session_state["user_input"],
+            "sentiment": st.session_state["sentiment"],
+            "confidence": st.session_state["confidence"],
+            "feedback": st.session_state["feedback"]
+        })
+        if response_feedback.status_code == 200:
+            st.success(f"Merci pour votre feedback : {st.session_state['feedback']}")
+            logger.info("Feedback envoyé avec succès.")
+            # Réinitialiser après envoi
+            st.session_state["feedback"] = None
+    except requests.exceptions.RequestException as e:
+        st.error("Impossible d'envoyer le feedback.")
+        logger.error(f"Erreur de connexion au serveur de feedback : {e}")

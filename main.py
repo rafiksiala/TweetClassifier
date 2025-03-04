@@ -72,10 +72,6 @@ model = load_model()
 # Définir la longueur maximale des séquences
 max_len = 100
 
-# Classe pour les requêtes de prédiction
-class NameRequest(BaseModel):
-    name: str
-
 # Fonction pour envoyer un log à Application Insights
 def log_prediction(text, prediction, confidence, feedback=None):
     if APP_INSIGHTS_CONNECTION_STRING:
@@ -91,10 +87,15 @@ def log_prediction(text, prediction, confidence, feedback=None):
             }
         )
 
+# Classe pour les requêtes de prédiction
+class NameRequest(BaseModel):
+    name: str
+
 # Endpoint pour la prédiction
 @app.post("/predict/")
 def predict(request: NameRequest):
     try:
+        print(request)
         preprocessed_input = preprocess_text(request.name)
         proba = model.predict_proba(preprocessed_input)[:, 1][0]
         sentiment = 'positif' if proba > 0.5 else 'négatif'
@@ -122,6 +123,7 @@ class FeedbackRequest(BaseModel):
 def feedback(request: FeedbackRequest):
     try:
         # Log du feedback utilisateur
+        print(request)
         log_prediction(request.text, request.sentiment, request.confidence, request.feedback)
         return {"message": "Feedback enregistré avec succès"}
     except Exception as e:
