@@ -28,13 +28,13 @@ def test_predict_sentiment(text, expected_sentiment):
     assert json_data["sentiment"] == expected_sentiment
 
 def test_predict_response_content():
-    """Vérifie que la réponse contient bien 'sentiment' et 'confiance' avec une confiance valide"""
+    """Vérifie que la réponse contient bien 'sentiment' et 'probabitlity' avec une probabilité valide"""
     response = client.post("/predict/", json={"text": "text"})
     assert response.status_code == 200
     json_data = response.json()
     assert "sentiment" in json_data
-    assert "confiance" in json_data
-    assert 0.5 <= json_data["confiance"] <= 1.0
+    assert "probabitlity" in json_data
+    assert 0.5 <= json_data["probabitlity"] <= 1.0
 
 def test_predict_missing_text():
     """Vérifie que l'API retourne une erreur 422 si le texte est absent"""
