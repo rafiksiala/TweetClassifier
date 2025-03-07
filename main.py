@@ -1,16 +1,23 @@
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
+
+import uvicorn
+
+import logging
+from opencensus.ext.azure.log_exporter import AzureLogHandler
+
+import tensorflow as tf
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+
 import pandas as pd
 import numpy as np
+
 import unicodedata
-import uvicorn
 import pickle
 import json
 import re
 import os
-import logging
-from opencensus.ext.azure.log_exporter import AzureLogHandler
 
 # ------------------------------------------------------------------------------
 
@@ -29,30 +36,33 @@ if not any(isinstance(handler, AzureLogHandler) for handler in logger.handlers) 
 
 # ------------------------------------------------------------------------------
 
-# Fonction de nettoyage du texte
-def clean_text(w):
+# Fonction de prétraitement du texte
+def preprocess_text(text, max_len=100):
+
     def unicode_to_ascii(s):
         return ''.join(c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn')
 
-    w = unicode_to_ascii(w.lower().strip())
-    w = re.sub(r"([?.!,¿])", r" ", w)
-    w = re.sub(r'[" "]+', " ", w)
-    w = re.sub(r"[^a-zA-Z0-9?.!,¿]+", " ", w)
-    w = re.sub(r'[@#]\w+', '', w)
+    text = unicode_to_ascii(text.lower().strip())
+    text = re.sub(r"([?.!,¿])", r" ", text)
+    text = re.sub(r'[" "]+', " ", text)
+    text = re.sub(r"[^a-zA-Z0-9?.!,¿]+", " ", text)
+    text = re.sub(r'[@#]\w+', '', text)
 
-    return w
+    with open("model/tokenizer.pkl", 'rb') as handle:
+        tokenizer = pickle.load(handle)
 
-# Fonction de prétraitement du texte
-def preprocess_text(text, max_len=100):
-    with open("vectorizer/vectorizer.pkl", 'rb') as handle:
-        vectorizer = pickle.load(handle)
-
-    return vectorizer.transform([clean_text(text)])
+    sequence = tokenizer.texts_to_sequences([text])
+    return pad_sequences(sequence, maxlen=100)
 
 # Charger le modèle entraîné
 def load_model():
-    with open("model/logistic_regression_model.pkl", "rb") as f:
-        return pickle.load(f)
+    return tf.keras.models.load_model("model/lstm_model.keras")
+
+# Charger le modèle
+model = load_model()
+
+# Définir la longueur maximale des séquences
+max_len = 100
 
 # ------------------------------------------------------------------------------
 
@@ -66,36 +76,15 @@ def home():
 async def favicon():
     return FileResponse("favicon.ico")
 
-# Charger le modèle
-model = load_model()
-
-# Définir la longueur maximale des séquences
-max_len = 100
-
 # Fonction pour envoyer un log à Application Insights
 
-
-def log_prediction(text, prediction, probabitlity, feedback=None):
-    if APP_INSIGHTS_CONNECTION_STRING:
-        logger.info(
-            "Prediction event",
-            extra={
-                "custom_dimensions": {
-                    "input_text": text,
-                    "predicted_sentiment": prediction,
-                    "probabitlity": probabitlity,
-                    "feedback": feedback if feedback else ""
-                }
-            }
-        )
-
-def log_prediction(text, prediction, probabitlity):
+def log_prediction(text, prediction, probability):
     if APP_INSIGHTS_CONNECTION_STRING:
         logger.info("Prediction envoyé avec succès", extra={
             "custom_dimensions": {
                 "input_text": text,
                 "predicted_sentiment": prediction,
-                "probabitlity": probabitlity
+                "probability": probability
             }})
 
 # Classe pour les requêtes de prédiction
@@ -107,27 +96,30 @@ class TextRequest(BaseModel):
 def predict(request: TextRequest):
     try:
         preprocessed_text = preprocess_text(request.text)
-        probs = model.predict_proba(preprocessed_text)
-        label = np.argmax(probs)
-        probabitlity = probs[0, label].item()
+
+        probability = float(model.predict(preprocessed_text)[0, 0])
+        label = 1 if probability >= 0.5 else 0
+        probability = max(probability, 1 - probability)
         sentiment = 'positif' if label else 'négatif'
 
-        # Log de la prédiction
-        log_prediction(request.text, sentiment, probabitlity)
-        return {'sentiment': sentiment, 'probabitlity': probabitlity}
+        # Log de la prediciton
+        log_prediction(request.text, sentiment, probability)
+
+        return {'sentiment': sentiment, 'probability': probability}
+
     except Exception as e:
         logger.error(f"Erreur lors de la prédiction: {str(e)}")
 
 # ------------------------------------------------------------------------------
 
-def log_feedback(text, prediction, probabitlity, feedback):
+def log_feedback(text, prediction, probability, feedback):
     if APP_INSIGHTS_CONNECTION_STRING:
         message = "Tweet correctement prédit" if feedback=="correct" else "Tweet mal prédit"
         logger.info(message, extra={
             "custom_dimensions": {
                 "input_text": text,
                 "predicted_sentiment": prediction,
-                "probabitlity": probabitlity,
+                "probability": probability,
                 "feedback": feedback
             }})
 
@@ -135,7 +127,7 @@ def log_feedback(text, prediction, probabitlity, feedback):
 class FeedbackRequest(BaseModel):
     text: str
     sentiment: str
-    probabitlity: float
+    probability: float
     feedback: str  # "correct" ou "incorrect"
 
 # Endpoint pour stocker le feedback
@@ -143,6 +135,7 @@ class FeedbackRequest(BaseModel):
 def feedback(request: FeedbackRequest):
     try:
         # Log du feedback utilisateur
-        log_feedback(request.text, request.sentiment, request.probabitlity, request.feedback)
+        log_feedback(request.text, request.sentiment, request.probability, request.feedback)
+
     except Exception as e:
         logger.error(f"Erreur lors du feedback: {str(e)}")

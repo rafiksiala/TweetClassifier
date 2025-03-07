@@ -11,8 +11,8 @@ st.title("Analyse de Sentiment")
 # Initialiser st.session_state pour éviter les KeyErrors
 if "sentiment" not in st.session_state:
     st.session_state["sentiment"] = None
-if "probabitlity" not in st.session_state:
-    st.session_state["probabitlity"] = None
+if "probability" not in st.session_state:
+    st.session_state["probability"] = None
 if "user_input" not in st.session_state:
     st.session_state["user_input"] = None
 if "feedback" not in st.session_state:
@@ -57,7 +57,7 @@ if st.button("Prédire le sentiment"):
             if response.status_code == 200:
                 result = response.json()
                 st.session_state["sentiment"] = result.get("sentiment", None)
-                st.session_state["probabitlity"] = result.get("probabitlity", 0)
+                st.session_state["probability"] = result.get("probability", 0)
                 st.session_state["user_input"] = user_input
                 st.session_state["feedback"] = None  # Reset du feedback pour réafficher les boutons
                 st.session_state["feedback_sent"] = False  # Réaffichage des boutons
@@ -102,7 +102,7 @@ if st.session_state["sentiment"]:
                 gap: 10px;
             }
 
-            .result-probabitlity {
+            .result-probability {
                 font-size: 18px;
                 font-weight: normal;
                 color: #555;
@@ -129,7 +129,7 @@ if st.session_state["sentiment"]:
         f"""
         <div class="result-container {sentiment_class}">
             <span class="result-text">{emoji} {st.session_state["sentiment"].upper()}
-            <span class="result-probabitlity">({st.session_state["probabitlity"]:.2%})</span></span>
+            <span class="result-probability">({st.session_state["probability"]:.2%})</span></span>
         </div>
         """,
         unsafe_allow_html=True
@@ -155,7 +155,7 @@ if st.session_state["feedback"]:
         response_feedback = requests.post(FEEDBACK_URL, json={
             "text": st.session_state["user_input"],
             "sentiment": st.session_state["sentiment"],
-            "probabitlity": st.session_state["probabitlity"],
+            "probability": st.session_state["probability"],
             "feedback": st.session_state["feedback"]
         })
         if response_feedback.status_code == 200:
