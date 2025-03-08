@@ -29,10 +29,15 @@ APP_INSIGHTS_CONNECTION_STRING = os.getenv(
 
 # Initialisation du logger pour envoyer les logs à Azure Application Insights
 logger = logging.getLogger(__name__)
+
+logger.handlers.clear()
+logger.propagate = False
+
 if not any(isinstance(handler, AzureLogHandler) for handler in logger.handlers) and APP_INSIGHTS_CONNECTION_STRING:
     logger.addHandler(AzureLogHandler(connection_string=APP_INSIGHTS_CONNECTION_STRING))
-    logger.setLevel(logging.INFO)
-    logger.info("Application Insights connecté avec succès pour FastAPI!")
+
+logger.setLevel(logging.INFO)
+logger.info("Application Insights connecté avec succès pour FastAPI!")
 
 # ------------------------------------------------------------------------------
 
