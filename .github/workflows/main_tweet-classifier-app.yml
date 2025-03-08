@@ -34,7 +34,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          pytest tests/ --maxfail=1 --disable-warnings
+          pytest tests/ --maxfail=1 -p no:warnings
         continue-on-error: false  # Arrête immédiatement si pytest échoue
 
       - name: Zip artifact for deployment
