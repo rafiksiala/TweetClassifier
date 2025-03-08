@@ -15,7 +15,7 @@ def test_home():
     assert response.json() == {"message": "Tweet Classifier App"}
 
 @pytest.mark.parametrize("text, expected_sentiment", [
-    ("This airline is a nightmare. Never flying again", "positif"),
+    ("This airline is a nightmare. Never flying again", "négatif"),
     ("The service was great. The best airline", "positif"),
 ])
 def test_predict_sentiment(text, expected_sentiment):
