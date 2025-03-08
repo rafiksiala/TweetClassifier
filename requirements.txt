@@ -8,6 +8,7 @@ pytest
 pandas
 scikit-learn
 streamlit
+tensorflow
 requests
 opencensus-ext-azure
 opencensus
