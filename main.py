@@ -7,9 +7,6 @@ import uvicorn
 import logging
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 
-import tensorflow as tf
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-
 import pandas as pd
 import numpy as np
 
@@ -42,7 +39,7 @@ logger.info("Application Insights connecté avec succès pour FastAPI!")
 # ------------------------------------------------------------------------------
 
 # Fonction de prétraitement du texte
-def preprocess_text(text, max_len=100):
+def preprocess_text(text):
 
     def unicode_to_ascii(s):
         return ''.join(c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn')
@@ -53,21 +50,18 @@ def preprocess_text(text, max_len=100):
     text = re.sub(r"[^a-zA-Z0-9?.!,¿]+", " ", text)
     text = re.sub(r'[@#]\w+', '', text)
 
-    with open("model/tokenizer.pkl", 'rb') as handle:
-        tokenizer = pickle.load(handle)
+    with open("model/tfidf_vectorizer.pkl", 'rb') as handle:
+         vectorizer = pickle.load(handle)
 
-    sequence = tokenizer.texts_to_sequences([text])
-    return pad_sequences(sequence, maxlen=100)
+    return vectorizer.transform([text])
 
 # Charger le modèle entraîné
 def load_model():
-    return tf.keras.models.load_model("model/lstm_model.keras")
+    with open("model/logistic_regression_model.pkl", "rb") as f:
+        return pickle.load(f)
 
 # Charger le modèle
 model = load_model()
-
-# Définir la longueur maximale des séquences
-max_len = 100
 
 # ------------------------------------------------------------------------------
 
@@ -102,9 +96,10 @@ def predict(request: TextRequest):
     try:
         preprocessed_text = preprocess_text(request.text)
 
-        probability = float(model.predict(preprocessed_text)[0, 0])
-        label = 1 if probability >= 0.5 else 0
-        probability = max(probability, 1 - probability)
+        probability = model.predict_proba(preprocessed_text)
+        label = np.argmax(probability)
+        probability = probability[0, label].item()
+
         sentiment = 'positif' if label else 'négatif'
 
         # Log de la prediciton
