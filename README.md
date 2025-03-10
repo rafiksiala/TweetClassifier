@@ -1,6 +1,6 @@
 # Application de Prédiction de Sentiments
 
-## 📖 Objectif du Projet
+## Objectif du Projet
 Ce projet vise à développer une **API de prédiction de sentiments** pour analyser le ton des tweets. Il repose sur la comparaison de plusieurs approches de modélisation NLP afin d’identifier la plus performante, suivie du déploiement du modèle optimisé, garantissant le meilleur équilibre entre **performance, rapidité d'exécution et coût opérationnel**.
 
 - **Modèle sur mesure simple** : Régression Logistique avec TF-IDF
@@ -11,7 +11,7 @@ Ce projet vise à développer une **API de prédiction de sentiments** pour anal
 - **Interface de test utilisateur** avec **Streamlit**
 - **Monitoring en production** via **Azure Application Insights**
 
-## 🏗️ Structure du Projet
+## Structure du Projet
 
 ```
 📂 tweet_classifier_app-main/
@@ -29,11 +29,11 @@ Ce projet vise à développer une **API de prédiction de sentiments** pour anal
 │   ├── main_tweet-classifier-app.yml
 ```
 
-## 🚀 Installation & Lancement
+## Installation & Lancement
 ### 1️⃣ Cloner le projet
 ```bash
-git clone <repo_url>
-cd tweet_classifier_app-main
+git clone https://github.com/rafiksiala/tweet_classifier_app.git
+cd tweet_classifier_app
 ```
 
 ### 2️⃣ Installer les dépendances
@@ -42,23 +42,31 @@ pip install -r requirements.txt
 ```
 
 ### 3️⃣ Lancer l’API et l’interface utilisateur
-Le lancement se fait via **startup.sh** qui démarre à la fois l'API et l'interface Streamlit.
 
-```bash
-bash startup.sh
-```
+1. **Lancer l’API avec Uvicorn** 
+   
+   ```bash
+   uvicorn main:app --reload --port 8001
+   ```  
+3. **Tester les prédictions**
 
-Ce script exécute :
-- **FastAPI avec Gunicorn** en arrière-plan sur le port **8001**
-- **Streamlit** sur le port **8000**
+   - Via l’interface interactive FastAPI (`http://127.0.0.1:8001/docs`)
+     
+   - Via l’interface utilisateur Streamlit (disponible à `http://localhost:8501`)  
+     ```bash
+     streamlit run app.py
+     ```
+     
+Le lancement sur le cloud est géré par le fichier `startup.sh`, où l’API tourne en **backend sur le port 8001** et est interrogée par l’application **Streamlit**, accessible à l’adresse [https://tweet-classifier-app.azurewebsites.net/](https://tweet-classifier-app.azurewebsites.net/)
 
-## 🔗 Endpoints de l'API
+
+## Endpoints de l'API
 | Méthode | Endpoint         | Description |
 |---------|----------------|-------------|
 | POST    | `/predict`     | Envoie un tweet et retourne la prédiction du sentiment |
 | POST    | `/feedback`    | Enregistre le feedback de l’utilisateur sur la prédiction |
 
-## 📦 Packages Utilisés
+## Packages Utilisés
 Le projet repose sur plusieurs bibliothèques essentielles :
 
 - **Framework Web & API** : `FastAPI`, `uvicorn`, `gunicorn`, `httpx`
@@ -69,13 +77,13 @@ Le projet repose sur plusieurs bibliothèques essentielles :
 - **Monitoring & Observabilité** : `opencensus-ext-azure`, `opencensus`, `opencensus-ext-logging`, `opencensus-ext-flask`, `opencensus-ext-requests`
 - **Tests et validation** : `pytest`
 
-## 🔄 Déploiement Automatisé (CI/CD)
+## Déploiement Automatisé (CI/CD)
 Le projet intègre un **pipeline CI/CD avec GitHub Actions** qui permet :
 - **Exécution automatique des tests unitaires** avec pytest à chaque commit.
 - **Déploiement automatique** de l’API et de l’interface utilisateur sur un service Cloud.
 - **Surveillance en production** avec **Azure Application Insights** pour remonter les erreurs.
 
-## 📊 Suivi des Performances en Production
+## Suivi des Performances en Production
 - **MLFlow** est utilisé pour tracker les modèles et comparer leurs performances.
 - **Azure Application Insights** détecte les tweets mal prédits et déclenche des alertes.
 - Un **système d’alerte** est configuré pour envoyer un e-mail/SMS en cas de problème.
