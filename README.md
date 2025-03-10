@@ -1,7 +1,7 @@
 # Application de Prédiction de Sentiments
 
 ## 📖 Objectif du Projet
-Ce projet vise à développer une **API de prédiction de sentiments** pour analyser le ton des tweets. L'objectif est d'expérimenter différentes approches de modélisation NLP et d'intégrer une démarche **MLOps** complète.
+Ce projet vise à développer une **API de prédiction de sentiments** pour analyser le ton des tweets. Il repose sur la comparaison de plusieurs approches de modélisation NLP afin d’identifier la plus performante, suivie du déploiement du modèle optimisé, garantissant le meilleur équilibre entre **performance, rapidité d'exécution et coût opérationnel**.
 
 - **Modèle sur mesure simple** : Régression Logistique avec TF-IDF
 - **Modèle sur mesure avancé** : LSTM avec embeddings
@@ -20,10 +20,9 @@ Ce projet vise à développer une **API de prédiction de sentiments** pour anal
 ├── 📜 main.py              # API FastAPI pour la prédiction et le feedback
 ├── 📜 requirements.txt      # Liste des dépendances
 ├── 📜 startup.sh            # Script de lancement (API + Streamlit)
-├── 📂 model/                # Contient les modèles entraînés (Logistic Regression, LSTM, BERT)
-│   ├── logistic_regression_model.pkl
-├── 📂 vectorizer/           # Contient le vectorizer TF-IDF
-│   ├── vectorizer.pkl
+├── 📂 model/                # Contient le modèle entraîné et le tokenizer
+│   ├── lstm_model.keras
+│   ├── tokenizer.pkl
 ├── 📂 tests/                # Contient les tests unitaires pour valider les fonctionnalités de l'API
 │   ├── test_main.py
 ├── 📂 .github/workflows/    # Pipeline CI/CD avec GitHub Actions
@@ -64,11 +63,11 @@ Le projet repose sur plusieurs bibliothèques essentielles :
 
 - **Framework Web & API** : `FastAPI`, `uvicorn`, `gunicorn`, `httpx`
 - **Manipulation des données** : `numpy`, `pandas`, `scikit-learn`
-- **Machine Learning & NLP** : `transformers`, `torch`
+- **Machine Learning & NLP** : `tensorflow`, `keras`
 - **Interface utilisateur** : `streamlit`
 - **Gestion des modèles & logs** : `MLFlow`
 - **Monitoring & Observabilité** : `opencensus-ext-azure`, `opencensus`, `opencensus-ext-logging`, `opencensus-ext-flask`, `opencensus-ext-requests`
-- **Tests et validation** : `pytest`, `pydantic`
+- **Tests et validation** : `pytest`
 
 ## 🔄 Déploiement Automatisé (CI/CD)
 Le projet intègre un **pipeline CI/CD avec GitHub Actions** qui permet :
