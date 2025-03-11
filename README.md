@@ -67,7 +67,8 @@ Le lancement sur le cloud est géré par le fichier `startup.sh`, où l’API to
 | POST    | `/feedback`    | Enregistre le feedback de l’utilisateur sur la prédiction |
 
 ## Packages Utilisés
-Le projet repose sur plusieurs bibliothèques essentielles :
+
+Le projet repose sur plusieurs bibliothèques essentielles, avec leurs versions spécifiées dans le fichier **`requirements.txt`** pour garantir la reproductibilité.  
 
 - **Framework Web & API** : `FastAPI`, `uvicorn`, `gunicorn`, `httpx`
 - **Manipulation des données** : `numpy`, `pandas`, `scikit-learn`
@@ -77,6 +78,8 @@ Le projet repose sur plusieurs bibliothèques essentielles :
 - **Monitoring & Observabilité** : `opencensus-ext-azure`, `opencensus`, `opencensus-ext-logging`, `opencensus-ext-flask`, `opencensus-ext-requests`
 - **Tests et validation** : `pytest`
 
+La version de Python utilisée pour ce projet est **`Python 3.11`**.
+  
 ## Déploiement Automatisé (CI/CD)
 Le projet intègre un **pipeline CI/CD avec GitHub Actions** qui permet :
 - **Exécution automatique des tests unitaires** avec pytest à chaque commit.
