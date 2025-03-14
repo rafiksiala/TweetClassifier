@@ -44,20 +44,20 @@ pip install -r requirements.txt
 
 ### 3️⃣ Lancer l’API et l’interface utilisateur
 
-1. **Lancer l’API avec Uvicorn** 
-   
+1. **Lancer l’API avec Uvicorn**
+
    ```bash
    uvicorn main:app --reload --port 8001
    ```  
 3. **Tester les prédictions**
 
    - Via l’interface interactive FastAPI (`http://127.0.0.1:8001/docs`)
-     
+
    - Via l’interface utilisateur Streamlit (disponible à `http://localhost:8501`)  
      ```bash
      streamlit run app.py
      ```
-     
+
 Le lancement sur le cloud est géré par le fichier `startup.sh`, où l’API tourne en **backend sur le port 8001** et est interrogée par l’application **Streamlit**, accessible à l’adresse [https://tweet-classifier-app.azurewebsites.net/](https://tweet-classifier-app.azurewebsites.net/)
 
 
@@ -79,8 +79,8 @@ Le projet repose sur plusieurs bibliothèques essentielles, avec leurs versions 
 - **Monitoring & Observabilité** : `opencensus-ext-azure`, `opencensus`, `opencensus-ext-logging`, `opencensus-ext-flask`, `opencensus-ext-requests`
 - **Tests et validation** : `pytest`
 
-La version de Python utilisée pour ce projet est **`Python 3.11`**.
-  
+La version de Python utilisée pour ce projet est **`Python 3.11.11`**.
+
 ## Déploiement Automatisé (CI/CD)
 Le projet intègre un **pipeline CI/CD avec GitHub Actions** qui permet :
 - **Exécution automatique des tests unitaires** avec pytest à chaque commit.
