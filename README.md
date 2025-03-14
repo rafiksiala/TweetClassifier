@@ -27,6 +27,7 @@ Ce projet vise à développer une **API de prédiction de sentiments** pour anal
 │   ├── test_main.py
 ├── 📂 .github/workflows/    # Pipeline CI/CD avec GitHub Actions
 │   ├── main_tweet-classifier-app.yml
+├── notebook.ipynb            # Notebook de modélisation et suivi d’expérimentations
 ```
 
 ## Installation & Lancement
