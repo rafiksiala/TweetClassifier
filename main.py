@@ -3,12 +3,15 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 import uvicorn
+import streamlit as st
 
 import logging
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 
 import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+from functools import lru_cache
 
 import pandas as pd
 import numpy as np
@@ -41,30 +44,30 @@ logger.info("Application Insights connecté avec succès pour FastAPI!")
 
 # ------------------------------------------------------------------------------
 
-# Fonction de prétraitement du texte
+@lru_cache(maxsize=1)
 def preprocess_text(text, max_len=100):
-
-    def unicode_to_ascii(s):
-        return ''.join(c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn')
-
-    text = unicode_to_ascii(text.lower().strip())
-    text = re.sub(r"([?.!,¿])", r" ", text)
-    text = re.sub(r'[" "]+', " ", text)
-    text = re.sub(r"[^a-zA-Z0-9?.!,¿]+", " ", text)
+    text = text.lower().strip()
+    text = re.sub(r'http\S+|www\.\S+', '', text)
     text = re.sub(r'[@#]\w+', '', text)
-
-    with open("model/tokenizer.pkl", 'rb') as handle:
-        tokenizer = pickle.load(handle)
-
+    text = ''.join(c for c in unicodedata.normalize('NFD', text) if unicodedata.category(c) != 'Mn')
+    text = re.sub(r"([?.!,¿])", r" ", text)
+    text = re.sub(r'\s+', ' ', text)
+    text = re.sub(r"[^a-zA-Z0-9]+", " ", text)
     sequence = tokenizer.texts_to_sequences([text])
-    return pad_sequences(sequence, maxlen=100)
+    return pad_sequences(sequence, maxlen=max_len)
 
-# Charger le modèle entraîné
 def load_model():
     return tf.keras.models.load_model("model/lstm_model.keras")
 
+def load_tokenizer():
+    with open("model/tokenizer.pkl", 'rb') as handle:
+        return pickle.load(handle)
+
 # Charger le modèle
 model = load_model()
+
+# Charger le tokenisateur
+tokenizer = load_tokenizer()
 
 # Définir la longueur maximale des séquences
 max_len = 100
