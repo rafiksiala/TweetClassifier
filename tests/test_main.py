@@ -12,7 +12,7 @@ def test_home():
     """Test que la page d'accueil retourne un message JSON correct"""
     response = client.get("/")
     assert response.status_code == 200
-    assert response.json() == {"message": "Tweet Classifier App"}
+    assert response.json() == {"message": "Tweet Classifier API"}
 
 @pytest.mark.parametrize("text, expected_sentiment", [
     ("This airline is a nightmare. Never flying again", "négatif"),

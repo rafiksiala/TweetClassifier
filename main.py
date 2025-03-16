@@ -77,7 +77,7 @@ app = FastAPI()
 
 @app.get("/")
 def home():
-    return {"message": "Tweet Classifier App"}
+    return {"message": "Tweet Classifier API"}
 
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
