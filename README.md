@@ -8,7 +8,6 @@ Ce projet vise à développer une **API de prédiction de sentiments** pour anal
 - **Modèle avancé BERT** : Fine-tuning d’un modèle BERT
 - **Tracking et gestion des modèles** avec **MLFlow**
 - **Déploiement continu** via **GitHub Actions**
-- **Monitoring en production** via **Azure Application Insights**
 
 ## Structure du Projet
 
@@ -80,7 +79,6 @@ Le projet repose sur plusieurs bibliothèques essentielles, avec leurs versions 
 - **Manipulation des données** : `numpy`, `pandas`, `scikit-learn`
 - **Machine Learning & NLP** : `tensorflow`, `keras`
 - **Gestion des modèles & logs** : `MLFlow`
-- **Monitoring & Observabilité** : `opencensus-ext-azure`, `opencensus`, `opencensus-ext-logging`, `opencensus-ext-flask`, `opencensus-ext-requests`
 - **Tests et validation** : `pytest`
 
 La version de Python utilisée pour ce projet est **`Python 3.11.11`**.
@@ -88,10 +86,7 @@ La version de Python utilisée pour ce projet est **`Python 3.11.11`**.
 ## Déploiement Automatisé (CI/CD)
 Le projet intègre un **pipeline CI/CD avec GitHub Actions** qui permet :
 - **Exécution automatique des tests unitaires** avec pytest à chaque commit.
-- **Déploiement automatique** de l’API et de l’interface utilisateur sur un service Cloud.
-- **Surveillance en production** avec **Azure Application Insights** pour remonter les erreurs.
+- **Déploiement automatique** de l’API sur un service Cloud.
 
-## Suivi des Performances en Production
+## Suivi des Performances
 - **MLFlow** est utilisé pour tracker les modèles et comparer leurs performances.
-- **Azure Application Insights** détecte les tweets mal prédits et déclenche des alertes.
-- Un **système d’alerte** est configuré pour envoyer un e-mail/SMS en cas de problème.
