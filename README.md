@@ -58,11 +58,11 @@ pip install -r requirements.txt
     ```
 4. **Déploiement sur le cloud (Azure Web Apps)**
 
-   L’API est déployée sur Azure Web Apps et tourne sur le port 8000.
+   - L’API est déployée sur Azure Web Apps et tourne sur le port 8000.
 
-   Elle est accessible publiquement à l’adresse : 📍 https://tweet-classifier-app.azurewebsites.net/
+   - Elle est accessible publiquement à l’adresse : 📍 https://tweet-classifier-app.azurewebsites.net/
 
-   L’interface Swagger pour tester les endpoints est disponible ici : 📍 https://tweet-classifier-app.azurewebsites.net/docs
+   - L’interface Swagger pour tester les endpoints est disponible ici : 📍 https://tweet-classifier-app.azurewebsites.net/docs
 
 
 ## Endpoints de l'API
