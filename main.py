@@ -3,7 +3,6 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 import uvicorn
-import streamlit as st
 
 import logging
 from opencensus.ext.azure.log_exporter import AzureLogHandler
@@ -74,7 +73,7 @@ max_len = 100
 
 # ------------------------------------------------------------------------------
 
-app = FastAPI(root_path="/api", root_path_in_servers=False)
+app = FastAPI()
 
 @app.get("/")
 def home():

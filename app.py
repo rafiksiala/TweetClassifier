@@ -3,8 +3,8 @@ import requests
 import logging
 
 # Configuration des URLs de l'API FastAPI
-API_URL = "https://tweet-classifier-app.azurewebsites.net/api/predict/"
-FEEDBACK_URL = "https://tweet-classifier-app.azurewebsites.net/api/feedback/"
+API_URL = "https://tweet-classifier-app.azurewebsites.net/predict/"
+FEEDBACK_URL = "https://tweet-classifier-app.azurewebsites.net/feedback/"
 
 
 st.title("Analyse de Sentiment")

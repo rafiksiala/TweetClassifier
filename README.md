@@ -8,7 +8,6 @@ Ce projet vise à développer une **API de prédiction de sentiments** pour anal
 - **Modèle avancé BERT** : Fine-tuning d’un modèle BERT
 - **Tracking et gestion des modèles** avec **MLFlow**
 - **Déploiement continu** via **GitHub Actions**
-- **Interface de test utilisateur** avec **Streamlit**
 - **Monitoring en production** via **Azure Application Insights**
 
 ## Structure du Projet
@@ -16,7 +15,6 @@ Ce projet vise à développer une **API de prédiction de sentiments** pour anal
 ```
 📂 tweet_classifier_app-main/
 ├── 📜 .gitignore
-├── 📜 app.py               # Interface utilisateur avec Streamlit
 ├── 📜 main.py              # API FastAPI pour la prédiction et le feedback
 ├── 📜 requirements.txt      # Liste des dépendances
 ├── 📜 startup.sh            # Script de lancement de l'API
@@ -62,7 +60,7 @@ pip install -r requirements.txt
 4. **Déploiement sur le cloud (Azure Web Apps)**
 
    L’API est déployée sur Azure Web Apps et tourne sur le port 8000.
-      
+
    Elle est accessible publiquement à l’adresse : 📍 https://tweet-classifier-app.azurewebsites.net/
 
    L’interface Swagger pour tester les endpoints est disponible ici : 📍 https://tweet-classifier-app.azurewebsites.net/docs
