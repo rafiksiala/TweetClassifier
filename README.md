@@ -19,7 +19,7 @@ Ce projet vise à développer une **API de prédiction de sentiments** pour anal
 ├── 📜 app.py               # Interface utilisateur avec Streamlit
 ├── 📜 main.py              # API FastAPI pour la prédiction et le feedback
 ├── 📜 requirements.txt      # Liste des dépendances
-├── 📜 startup.sh            # Script de lancement (API + Streamlit)
+├── 📜 startup.sh            # Script de lancement de l'API
 ├── 📂 model/                # Contient le modèle entraîné et le tokenizer
 │   ├── lstm_model.keras
 │   ├── tokenizer.pkl
@@ -47,18 +47,25 @@ pip install -r requirements.txt
 1. **Lancer l’API avec Uvicorn**
 
    ```bash
-   uvicorn main:app --reload --port 8001
+   uvicorn main:app --reload --host 0.0.0.0 --port 8000
    ```  
 3. **Tester les prédictions**
 
-   - Via l’interface interactive FastAPI (`http://127.0.0.1:8001/docs`)
+   - Via l’interface interactive FastAPI (Swagger UI) : (`http://127.0.0.1:8000/docs`)
 
-   - Via l’interface utilisateur Streamlit (disponible à `http://localhost:8501`)  
-     ```bash
-     streamlit run app.py
-     ```
+   - Via curl :
+   ```bash
+      curl -X 'POST' 'http://127.0.0.1:8000/predict/' \
+        -H 'Content-Type: application/json' \
+        -d '{"text": "test"}'
+    ```
+4. **Déploiement sur le cloud (Azure Web Apps)**
 
-Le lancement sur le cloud est géré par le fichier `startup.sh`, où l’API tourne en **backend sur le port 8001** et est interrogée par l’application **Streamlit**, accessible à l’adresse [https://tweet-classifier-app.azurewebsites.net/](https://tweet-classifier-app.azurewebsites.net/)
+   L’API est déployée sur Azure Web Apps et tourne sur le port 8000.
+      
+   Elle est accessible publiquement à l’adresse : 📍 https://tweet-classifier-app.azurewebsites.net/
+
+   L’interface Swagger pour tester les endpoints est disponible ici : 📍 https://tweet-classifier-app.azurewebsites.net/docs
 
 
 ## Endpoints de l'API
@@ -74,7 +81,6 @@ Le projet repose sur plusieurs bibliothèques essentielles, avec leurs versions 
 - **Framework Web & API** : `FastAPI`, `uvicorn`, `gunicorn`, `httpx`
 - **Manipulation des données** : `numpy`, `pandas`, `scikit-learn`
 - **Machine Learning & NLP** : `tensorflow`, `keras`
-- **Interface utilisateur** : `streamlit`
 - **Gestion des modèles & logs** : `MLFlow`
 - **Monitoring & Observabilité** : `opencensus-ext-azure`, `opencensus`, `opencensus-ext-logging`, `opencensus-ext-flask`, `opencensus-ext-requests`
 - **Tests et validation** : `pytest`
