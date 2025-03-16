@@ -74,7 +74,7 @@ max_len = 100
 
 # ------------------------------------------------------------------------------
 
-app = FastAPI(root_path="/api")
+app = FastAPI(root_path="/api", root_path_in_servers=False)
 
 @app.get("/")
 def home():
