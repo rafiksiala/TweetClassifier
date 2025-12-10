@@ -1,92 +1,117 @@
-# Application de Prédiction de Sentiments
+# **Sentiment Prediction Application**
 
-## Objectif du Projet
-Ce projet vise à développer une **API de prédiction de sentiments** pour analyser le ton des tweets. Il repose sur la comparaison de plusieurs approches de modélisation NLP afin d’identifier la plus performante, suivie du déploiement du modèle optimisé, garantissant le meilleur équilibre entre **performance, rapidité d'exécution et coût opérationnel**.
+## **Project Objective**
 
-- **Modèle sur mesure simple** : Régression Logistique avec TF-IDF
-- **Modèle sur mesure avancé** : LSTM avec embeddings
-- **Modèle avancé BERT** : Fine-tuning d’un modèle BERT
-- **Tracking et gestion des modèles** avec **MLFlow**
-- **Déploiement continu** via **GitHub Actions**
+This project aims to develop a **sentiment prediction API** to analyse the tone of tweets. It relies on comparing several NLP modelling approaches to identify the most performant one, followed by deploying the optimised model to ensure the best balance between **accuracy, execution speed, and operational cost**.
 
-## Structure du Projet
+* **Simple custom model:** Logistic Regression with TF-IDF
+* **Advanced custom model:** LSTM with embeddings
+* **Advanced BERT model:** Fine-tuning a BERT model
+* **Model tracking and management** using **MLFlow**
+* **Continuous deployment** via **GitHub Actions**
+
+---
+
+## **Project Structure**
 
 ```
 📂 tweet_classifier_app-main/
 ├── 📜 .gitignore
-├── 📜 main.py              # API FastAPI pour la prédiction et le feedback
-├── 📜 requirements.txt      # Liste des dépendances
-├── 📜 startup.sh            # Script de lancement de l'API
-├── 📂 model/                # Contient le modèle entraîné et le tokenizer
+├── 📜 main.py              # FastAPI used for prediction and feedback
+├── 📜 requirements.txt      # List of dependencies
+├── 📜 startup.sh            # Script to launch the API
+├── 📂 model/                # Contains the trained model and tokenizer
 │   ├── lstm_model.keras
 │   ├── tokenizer.pkl
-├── 📂 tests/                # Contient les tests unitaires pour valider les fonctionnalités de l'API
+├── 📂 tests/                # Unit tests validating the API functionalities
 │   ├── test_main.py
-├── 📂 .github/workflows/    # Pipeline CI/CD avec GitHub Actions
+├── 📂 .github/workflows/    # CI/CD pipeline using GitHub Actions
 │   ├── main_tweet-classifier-app.yml
-├── notebook.ipynb            # Notebook de modélisation et suivi d’expérimentations
+├── notebook.ipynb           # Modelling and experiment tracking notebook
 ```
 
-## Installation & Lancement
-### 1️⃣ Cloner le projet
+---
+
+## **Installation & Launch**
+
+### **1️⃣ Clone the project**
+
 ```bash
 git clone https://github.com/rafiksiala/tweet_classifier_app.git
 cd tweet_classifier_app
 ```
 
-### 2️⃣ Installer les dépendances
+### **2️⃣ Install dependencies**
+
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3️⃣ Lancer l’API et l’interface utilisateur
+### **3️⃣ Launch the API and the user interface**
 
-1. **Lancer l’API avec Uvicorn**
+#### **1. Start the API with Uvicorn**
 
-   ```bash
-   uvicorn main:app --reload --host 0.0.0.0 --port 8000
-   ```  
-3. **Tester les prédictions**
+```bash
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
 
-   - Via l’interface interactive FastAPI (Swagger UI) : (`http://127.0.0.1:8000/docs`)
+#### **2. Test predictions**
 
-   - Via curl :
-   ```bash
-      curl -X 'POST' 'http://127.0.0.1:8000/predict/' \
-        -H 'Content-Type: application/json' \
-        -d '{"text": "test"}'
-    ```
-4. **Déploiement sur le cloud (Azure Web Apps)**
+* Via the interactive FastAPI interface (Swagger UI):
+  👉 `http://127.0.0.1:8000/docs`
 
-   - L’API est déployée sur Azure Web Apps et tourne sur le port 8000.
+* Via curl:
 
-   - Elle est accessible publiquement à l’adresse : 📍 https://tweet-classifier-app.azurewebsites.net/
+```bash
+curl -X 'POST' 'http://127.0.0.1:8000/predict/' \
+  -H 'Content-Type: application/json' \
+  -d '{"text": "test"}'
+```
 
-   - L’interface Swagger pour tester les endpoints est disponible ici : 📍 https://tweet-classifier-app.azurewebsites.net/docs
+#### **3. Cloud Deployment (Azure Web Apps)**
 
+* The API is deployed on Azure Web Apps and runs on port 8000.
 
-## Endpoints de l'API
-| Méthode | Endpoint         | Description |
-|---------|----------------|-------------|
-| POST    | `/predict`     | Envoie un tweet et retourne la prédiction du sentiment |
-| POST    | `/feedback`    | Enregistre le feedback de l’utilisateur sur la prédiction |
+* Public URL:
+  📍 [https://tweet-classifier-app.azurewebsites.net/](https://tweet-classifier-app.azurewebsites.net/)
 
-## Packages Utilisés
+* Swagger interface for endpoint testing:
+  📍 [https://tweet-classifier-app.azurewebsites.net/docs](https://tweet-classifier-app.azurewebsites.net/docs)
 
-Le projet repose sur plusieurs bibliothèques essentielles, avec leurs versions spécifiées dans le fichier **`requirements.txt`** pour garantir la reproductibilité.  
+---
 
-- **Framework Web & API** : `FastAPI`, `uvicorn`, `gunicorn`, `httpx`
-- **Manipulation des données** : `numpy`, `pandas`, `scikit-learn`
-- **Machine Learning & NLP** : `tensorflow`, `keras`
-- **Gestion des modèles & logs** : `MLFlow`
-- **Tests et validation** : `pytest`
+## **API Endpoints**
 
-La version de Python utilisée pour ce projet est **`Python 3.11.11`**.
+| Method | Endpoint    | Description                                       |
+| ------ | ----------- | ------------------------------------------------- |
+| POST   | `/predict`  | Sends a tweet and returns the predicted sentiment |
+| POST   | `/feedback` | Stores user feedback on the prediction            |
 
-## Déploiement Automatisé (CI/CD)
-Le projet intègre un **pipeline CI/CD avec GitHub Actions** qui permet :
-- **Exécution automatique des tests unitaires** avec pytest à chaque commit.
-- **Déploiement automatique** de l’API sur un service Cloud.
+---
 
-## Suivi des Performances
-- **MLFlow** est utilisé pour tracker les modèles et comparer leurs performances.
+## **Packages Used**
+
+The project relies on several essential libraries, with versions specified in the **`requirements.txt`** file to guarantee full reproducibility.
+
+* **Web Framework & API:** `FastAPI`, `uvicorn`, `gunicorn`, `httpx`
+* **Data Manipulation:** `numpy`, `pandas`, `scikit-learn`
+* **Machine Learning & NLP:** `tensorflow`, `keras`
+* **Model & Log Management:** `MLFlow`
+* **Testing:** `pytest`
+
+The Python version used for this project is **`Python 3.11.11`**.
+
+---
+
+## **Automated Deployment (CI/CD)**
+
+The project integrates a **CI/CD pipeline with GitHub Actions**, enabling:
+
+* **Automatic execution of unit tests** with pytest on every commit
+* **Automatic deployment** of the API to a Cloud service
+
+---
+
+## **Performance Tracking**
+
+* **MLFlow** is used to track models and compare their performance over time.
